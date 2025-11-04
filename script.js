@@ -1,29 +1,35 @@
-const token = 'XNBkDbeTInydKBSsYUuorCmBjaJELQio';
-
-const proxy = 'https://corsproxy.io/?';
-const url = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/locations?limit=1000';
+const token = "XNBkDbeTInydKBSsYUuorCmBjaJELQio";
+const proxy = "https://corsproxy.io/?";
+const url = "https://www.ncdc.noaa.gov/cdo-web/api/v2/data?datasetid=GHCND&locationid=ZIP:28801&startdate=2010-05-01&enddate=2010-05-01&limit=20";
 
 fetch(proxy + url, {
   headers: { token: token }
 })
-  .then(res => res.json())
+  .then(res => {
+    if (!res.ok) throw new Error("Błąd pobierania danych NOAA");
+    return res.json();
+  })
   .then(data => {
-    const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '';
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = "";
 
-    (data.results || []).forEach(station => {
-      const tr = document.createElement('tr');
+    if (!data.results || data.results.length === 0) {
+      tbody.innerHTML = 'Brak danych'
+      return;
+    }
+
+    data.results.forEach(entry => {
+      const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${station.id}</td>
-        <td>${station.name}</td>
-        <td>${station.state || '-'}</td>
-        <td>${station.latitude || '-'}</td>
-        <td>${station.longitude || '-'}</td>
+        <td>${entry.date || '-'}</td>
+        <td>${entry.datatype || '-'}</td>
+        <td>${entry.value || '-'}</td>
+        <td>${entry.station || '-'}</td>
       `;
       tbody.appendChild(tr);
     });
   })
   .catch(err => {
-    console.error('Fetch error:', err);
-    alert('Nie można pobrać danych NOAA (CORS).');
+    console.error(err);
+    alert("Błąd pobierania danych NOAA");
   });
