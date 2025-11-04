@@ -1,7 +1,7 @@
 const token = 'XNBkDbeTInydKBSsYUuorCmBjaJELQio';
 
 const proxy = 'https://corsproxy.io/?';
-const url = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/stations';
+const url = 'https://www.ncdc.noaa.gov/cdo-web/api/v2/locations?limit=1000';
 
 fetch(proxy + url, {
   headers: { token: token }
